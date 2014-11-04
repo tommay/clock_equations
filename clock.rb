@@ -19,28 +19,44 @@ def main
     end
   end
 
-  times.each do |time|
-    time_digits = time.sub(/:/, "").chars
-    
-    # We're going to take the time and intersperse the digits with
-    # all combinations of operators.  Except we only allow one "=".
-    # ops is the array of all possible operator combinations of the
-    # correct length to intersperse with the time.
-    
-    ops = ([["=", "+", "-", "*", "/", ""]] * (time_digits.size - 1))
-      .reduce(&:product)
-      .map(&:flatten)
-      .select{|x| x.count("=") == 1}
-    
-    # Zip each operator set into the digits and join the result to
-    # make a string.  If the string evaluates as true, print it out.
-    
-    ops.each do |op_array|
-      equation = time_digits.zip(op_array).flatten.join
-      if Evaluator.eval(equation)
-        puts "#{time} => #{equation.gsub(/\b/, " ").strip}"
-      end
-    end
+  # Create all equations for each time:
+  # [[time0, equation0], [time0, equation1], ..., [timeN, equation0], ...]
+
+  time_and_equations = times.flat_map do |time|
+    [time].product(equations_for_time(time))
+  end
+
+  # Select the valid time/equations.
+
+  valid_time_and_equations = time_and_equations.select do |time, equation|
+    Evaluator.eval(equation)
+  end
+
+  # Output the valid time/equations.
+
+  valid_time_and_equations.each do |time, equation|
+    puts "#{time} => #{equation.gsub(/\b/, " ").strip}"
+  end
+end
+
+def equations_for_time(time)
+  time_digits = time.sub(/:/, "").chars
+  
+  # We're going to take the time and intersperse the digits with
+  # all combinations of operators.  Except we only allow one "=".
+  # ops is the array of all possible operator combinations of the
+  # correct length to intersperse with the time.
+  
+  ops = ([["=", "+", "-", "*", "/", ""]] * (time_digits.size - 1))
+    .reduce(&:product)
+    .map(&:flatten)
+    .select{|x| x.count("=") == 1}
+  
+  # Zip each operator set into the digits and join the result to
+  # make a string.  If the string evaluates as true, print it out.
+  
+  ops.map do |op_array|
+    time_digits.zip(op_array).flatten.join
   end
 end
 
