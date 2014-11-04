@@ -13,29 +13,32 @@ require "stringio"
 def main
   # Generate each time.
 
-  (1..12).each do |hour|
-    (0..59).each do |minute|
-      time = "%d:%02d" % [hour, minute]
-      time_digits = time.sub(/:/, "").chars
+  times = (1..12).flat_map do |hour|
+    (0..59).map do |minute|
+      "%d:%02d" % [hour, minute]
+    end
+  end
 
-      # We're going to take the time and intersperse the digits with
-      # all combinations of operators.  Except we only allow one "=".
-      # ops is the array of all possible operator combinations of the
-      # correct length to intersperse with the time.
-
-      ops = ([["=", "+", "-", "*", "/", ""]] * (time_digits.size - 1))
-        .reduce(&:product)
-        .map(&:flatten)
-        .select{|x| x.count("=") == 1}
-
-      # Zip each operator set into the digits and join the result to
-      # make a string.  If the string evaluates as true, print it out.
-
-      ops.each do |op_array|
-        equation = time_digits.zip(op_array).flatten.join
-        if Evaluator.eval(equation)
-          puts "#{time} => #{equation.gsub(/\b/, " ").strip}"
-        end
+  times.each do |time|
+    time_digits = time.sub(/:/, "").chars
+    
+    # We're going to take the time and intersperse the digits with
+    # all combinations of operators.  Except we only allow one "=".
+    # ops is the array of all possible operator combinations of the
+    # correct length to intersperse with the time.
+    
+    ops = ([["=", "+", "-", "*", "/", ""]] * (time_digits.size - 1))
+      .reduce(&:product)
+      .map(&:flatten)
+      .select{|x| x.count("=") == 1}
+    
+    # Zip each operator set into the digits and join the result to
+    # make a string.  If the string evaluates as true, print it out.
+    
+    ops.each do |op_array|
+      equation = time_digits.zip(op_array).flatten.join
+      if Evaluator.eval(equation)
+        puts "#{time} => #{equation.gsub(/\b/, " ").strip}"
       end
     end
   end
