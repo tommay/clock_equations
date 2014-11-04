@@ -11,6 +11,12 @@
 require "stringio"
 
 def main
+  time_and_equations.each do |time, equation|
+    puts "#{time} => #{equation.gsub(/\b/, " ").strip}"
+  end
+end
+
+def time_and_equations
   # Generate each time.
 
   times = (1..12).flat_map do |hour|
@@ -32,11 +38,9 @@ def main
     Evaluator.eval(equation)
   end
 
-  # Output the valid time/equations.
+  # Return them.
 
-  valid_time_and_equations.each do |time, equation|
-    puts "#{time} => #{equation.gsub(/\b/, " ").strip}"
-  end
+  valid_time_and_equations
 end
 
 def equations_for_time(time)
