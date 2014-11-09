@@ -44,8 +44,8 @@ class CallccEnumerator
   end
 
   def <<(value)
-    @to_block = callcc{|cc|cc}
-    if @to_block
+    callcc do |cc|
+      @to_block = cc
       @to_enumerator.call(value)
     end
   end
