@@ -16,6 +16,16 @@ def main
   end
 end
 
+class Enumerator
+  def chain(&block)
+    Enumerator.new do |y|
+      self.each do |element|
+        block.call(element, y)
+      end
+    end
+  end
+end
+
 def time_and_equations
   times = Enumerator.new do |y|
     (1..12).each do |hour|
@@ -28,21 +38,17 @@ def time_and_equations
   # Create all equations for each time:
   # [[time0, equation0], [time0, equation1], ..., [timeN, equation0], ...]
 
-  time_and_equations = Enumerator.new do |y|
-    times.each do |time|
-      equations_for_time(time).each do |equation|
-        y << [time, equation]
-      end
+  time_and_equations = times.chain do |time, y|
+    equations_for_time(time).each do |equation|
+      y << [time, equation]
     end
   end
 
-  # Select the valid time/equations.
+  # Filter for valid time/equations.
 
-  valid_time_and_equations = Enumerator.new do |y|
-    time_and_equations.each do |time, equation|
-      if Evaluator.eval(equation)
-        y << [time, equation]
-      end
+  valid_time_and_equations = time_and_equations.chain do |(time, equation), y|
+    if Evaluator.eval(equation)
+      y << [time, equation]
     end
   end
 
