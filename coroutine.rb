@@ -2,8 +2,11 @@ require "continuation"
 
 class Coroutine
   def initialize(&block)
-    @block = block
-    @cont = nil
+    # The initial "continuation" is the coroutine block.  This results
+    # in any arguments passed to the initial "switch" being passed to
+    # the coroutine as block arguments, ala Fiber!
+
+    @cont = block
   end
 
   def switch(value = nil)
@@ -15,11 +18,7 @@ class Coroutine
     callcc do |cc|
       cont = @cont
       @cont = cc
-      if !cont
-        @block.call
-      else
-        cont.call(value)
-      end
+      cont.call(value)
     end
   end
 end
