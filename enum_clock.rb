@@ -38,8 +38,12 @@ def time_and_equations
 
   # Select the valid time/equations.
 
-  valid_time_and_equations = time_and_equations.select do |time, equation|
-    Evaluator.eval(equation)
+  valid_time_and_equations = Enumerator.new do |y|
+    time_and_equations.each do |time, equation|
+      if Evaluator.eval(equation)
+        y << [time, equation]
+      end
+    end
   end
 
   # Return them.
