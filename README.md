@@ -1,7 +1,7 @@
 clock_equations
 ===============
 
-Figure out the smple equations that can be made from the time on a digital clock
+Figure out the simple equations that can be made from the time on a digital clock
 
 My 9-year old daughter Chloe and I like to look at the digital clock
 sometimes and make equations out of the numbers.  For example,
