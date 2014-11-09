@@ -8,7 +8,7 @@ class FiberEnumerator
   def initialize(&block)
     @fiber = Fiber.new do
       block.call(Yielder)
-      raise "I'm done"
+      raise StopIteration
     end
   end
 
@@ -17,8 +17,11 @@ class FiberEnumerator
   end
 
   def each(&block)
-    while @fiber.alive?
-      block.call(self.next)
+    begin
+      while true
+        block.call(self.next)
+      end
+    rescue StopIteration
     end
   end
 
