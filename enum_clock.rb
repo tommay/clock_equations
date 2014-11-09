@@ -11,10 +11,12 @@
 require "stringio"
 require_relative "fiber_enumerator"
 require_relative "callcc_enumerator"
+require_relative "coroutine_enumerator"
 
 #UseEnumerator = Enumerator
 #UseEnumerator = FiberEnumerator
-UseEnumerator = CallccEnumerator
+#UseEnumerator = CallccEnumerator
+UseEnumerator = CoroutineEnumerator
 
 def main
   time_and_equations.each do |time, equation|
