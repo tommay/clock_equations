@@ -28,8 +28,12 @@ def time_and_equations
   # Create all equations for each time:
   # [[time0, equation0], [time0, equation1], ..., [timeN, equation0], ...]
 
-  time_and_equations = times.flat_map do |time|
-    [time].product(equations_for_time(time))
+  time_and_equations = Enumerator.new do |y|
+    times.each do |time|
+      equations_for_time(time).each do |equation|
+        y << [time, equation]
+      end
+    end
   end
 
   # Select the valid time/equations.
