@@ -19,7 +19,7 @@ the valid equations.
 - enum_clock.rb uses explicit enumerators of various kinds, mostly to see
 how things weould come out if I coded them up;
     <dl>
-       <dt>Enumerator<dt>
+       <dt>Enumerator</dt>
        <dd>Standard Ruby Enumerator</dd>
        <dt>FiberEnumerator</dt>
        <dd>Enumerator using Fiber (fiber_enumerator.rb).  This is
