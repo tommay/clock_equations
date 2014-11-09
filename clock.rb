@@ -18,9 +18,10 @@ end
 
 def time_and_equations
   # Generate each time.
+  # Both the ranges need to use .lazy to get full laziness.
 
-  times = (1..12).flat_map do |hour|
-    (0..59).map do |minute|
+  times = (1..12).lazy.flat_map do |hour|
+    (0..59).lazy.map do |minute|
       "%d:%02d" % [hour, minute]
     end
   end
