@@ -9,6 +9,10 @@
 # and evaluating their truth value.
 
 require "stringio"
+require_relative "fiber_enumerator"
+
+#UseEnumerator = Enumerator
+UseEnumerator = FiberEnumerator
 
 def main
   time_and_equations.each do |time, equation|
@@ -16,9 +20,9 @@ def main
   end
 end
 
-class Enumerator
+class UseEnumerator
   def chain(&block)
-    Enumerator.new do |y|
+    UseEnumerator.new do |y|
       self.each do |element|
         block.call(element, y)
       end
@@ -27,7 +31,7 @@ class Enumerator
 end
 
 def time_and_equations
-  times = Enumerator.new do |y|
+  times = UseEnumerator.new do |y|
     (1..12).each do |hour|
       (0..59).each do |minute|
         y << "%d:%02d" % [hour, minute]
