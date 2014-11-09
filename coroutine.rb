@@ -9,7 +9,7 @@ class Coroutine
     @cont = block
   end
 
-  def switch(value = nil)
+  def switch(*values)
     # We can simply return the value from callcc because it will never
     # return a Continuation here because the block will never reach
     # its end.  The value returned by callcc, and therefore switch,
@@ -18,7 +18,7 @@ class Coroutine
     callcc do |cc|
       cont = @cont
       @cont = cc
-      cont.call(value)
+      cont.call(*values)
     end
   end
 end
