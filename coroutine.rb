@@ -1,5 +1,13 @@
 require "continuation"
 
+# For some reason calling Fiber.current prevents a "coroutine.rb:25:in
+# `call': continuation called across fiber (RuntimeError)" which
+# started happening after switching Evaluator from StringIO to
+# String#each_char.
+
+require "fiber"
+Fiber.current
+
 class Coroutine
   def initialize(&block)
     # The initial "continuation" is the coroutine block.  This results
