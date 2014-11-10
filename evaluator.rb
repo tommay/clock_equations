@@ -7,20 +7,25 @@ class Evaluator
 
   def initialize(expression)
     @expression = expression
+    @io = nil
+    @c = nil
   end
 
   def eval
     StringIO.open(@expression) do |io|
-      equality(io)
+      @io = io
+      @c = @io.getc
+      equality
     end
   end
 
-  def equality(io)
-    left = sum(io)
-    if io.getc != "="
+  def equality
+    left = sum
+    if @c != "="
       raise "expected ="
     end
-    right = sum(io)
+    @c = @io.getc
+    right = sum
     left == right
   end
 
@@ -43,20 +48,20 @@ class Evaluator
 
   # Left-associatuve version.
 
-  def sum(io)
-    left = product(io)
-    more_sum(left, io)
+  def sum
+    left = product
+    more_sum(left)
   end
 
-  def more_sum(left, io)
-    c = io.getc
-    case c
+  def more_sum(left)
+    case @c
     when "+"
-      more_sum(left + product(io), io)
+      @c = @io.getc
+      more_sum(left + product)
     when "-"
-      more_sum(left - product(io), io)
+      @c = @io.getc
+      more_sum(left - product)
     else
-      io.ungetc(c)
       left
     end
   end
@@ -79,39 +84,40 @@ class Evaluator
 
   # Left-associative version.
 
-  def product(io)
-    left = number(io)
-    more_product(left, io)
+  def product
+    left = number
+    more_product(left)
   end
 
-  def more_product(left, io)
-    c = io.getc
-    case c
+  def more_product(left)
+    case @c
     when "*"
-      more_product(left * number(io), io)
+      @c = @io.getc
+      more_product(left * number)
     when "/"
-      more_product(left / number(io), io)
+      @c = @io.getc
+      more_product(left / number)
     else
-      io.ungetc(c)
       left
     end
   end
 
-  def number(io)
-    c = io.getc
-    if c < "0" || c > "9"
+  def number
+    if @c < "0" || @c > "9"
       raise "expected 0-9"
     end
-    more_number(c.to_f, io)
+    n = @c.to_f
+    @c = @io.getc
+    more_number(n)
   end
 
-  def more_number(n, io)
-    c = io.getc
-    if c.nil? || c < "0" || c > "9"
-      io.ungetc(c)
+  def more_number(n)
+    if @c.nil? || @c < "0" || @c > "9"
       n
     else
-      more_number(n*10 + c.to_f, io)
+      n = n*10 + @c.to_f
+      @c = @io.getc
+      more_number(n)
     end
   end
 end
