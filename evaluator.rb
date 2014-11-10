@@ -41,6 +41,10 @@ class Evaluator
     end
   end
 
+  def digit?
+    next?{|c| c != nil && c >= "0" && c <= "9"}
+  end
+
   def equality
     left = sum
     if !next?("=")
@@ -83,7 +87,7 @@ class Evaluator
   end
 
   def number
-    if c = next?{|c| c >= "0" && c <= "9"}
+    if c = digit?
       more_number(c.to_f)
     else
       raise "expected 0-9"
@@ -91,7 +95,7 @@ class Evaluator
   end
 
   def more_number(n)
-    if c = next?{|c| c != nil && c >= "0" && c <= "9"}
+    if c = digit?
       more_number(n*10 + c.to_f)
     else
       n
