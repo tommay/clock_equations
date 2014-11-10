@@ -14,9 +14,13 @@ class Evaluator
   def eval
     StringIO.open(@expression) do |io|
       @io = io
-      @c = @io.getc
+      nextc
       equality
     end
+  end
+
+  def nextc
+    @c = @io.getc
   end
 
   def equality
@@ -24,7 +28,7 @@ class Evaluator
     if @c != "="
       raise "expected ="
     end
-    @c = @io.getc
+    nextc
     right = sum
     left == right
   end
@@ -56,10 +60,10 @@ class Evaluator
   def more_sum(left)
     case @c
     when "+"
-      @c = @io.getc
+      nextc
       more_sum(left + product)
     when "-"
-      @c = @io.getc
+      nextc
       more_sum(left - product)
     else
       left
@@ -92,10 +96,10 @@ class Evaluator
   def more_product(left)
     case @c
     when "*"
-      @c = @io.getc
+      nextc
       more_product(left * number)
     when "/"
-      @c = @io.getc
+      nextc
       more_product(left / number)
     else
       left
@@ -107,7 +111,7 @@ class Evaluator
       raise "expected 0-9"
     end
     n = @c.to_f
-    @c = @io.getc
+    nextc
     more_number(n)
   end
 
@@ -116,7 +120,7 @@ class Evaluator
       n
     else
       n = n*10 + @c.to_f
-      @c = @io.getc
+      nextc
       more_number(n)
     end
   end
