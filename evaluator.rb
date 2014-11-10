@@ -2,12 +2,20 @@ require "stringio"
 
 class Evaluator
   def self.eval(expression)
-    StringIO.open(expression) do |io|
+    Evaluator.new(expression).eval
+  end
+
+  def initialize(expression)
+    @expression = expression
+  end
+
+  def eval
+    StringIO.open(@expression) do |io|
       equality(io)
     end
   end
 
-  def self.equality(io)
+  def equality(io)
     left = sum(io)
     if io.getc != "="
       raise "expected ="
@@ -19,7 +27,7 @@ class Evaluator
   # Oops, these need to be left associative else
   # 0-1-1 = 0-(1-1) = 0 instead of -2.
 
-  def self.sum(io)
+  def sum(io)
     left = product(io)
     c = io.getc
     case c
@@ -35,12 +43,12 @@ class Evaluator
 
   # Left-associatuve version.
 
-  def self.sum(io)
+  def sum(io)
     left = product(io)
     more_sum(left, io)
   end
 
-  def self.more_sum(left, io)
+  def more_sum(left, io)
     c = io.getc
     case c
     when "+"
@@ -55,7 +63,7 @@ class Evaluator
 
   # Right-associative version.
 
-  def self.product(io)
+  def product(io)
     left = number(io)
     c = io.getc
     case c
@@ -71,12 +79,12 @@ class Evaluator
 
   # Left-associative version.
 
-  def self.product(io)
+  def product(io)
     left = number(io)
     more_product(left, io)
   end
 
-  def self.more_product(left, io)
+  def more_product(left, io)
     c = io.getc
     case c
     when "*"
@@ -89,7 +97,7 @@ class Evaluator
     end
   end
 
-  def self.number(io)
+  def number(io)
     c = io.getc
     if c < "0" || c > "9"
       raise "expected 0-9"
@@ -97,7 +105,7 @@ class Evaluator
     more_number(c.to_f, io)
   end
 
-  def self.more_number(n, io)
+  def more_number(n, io)
     c = io.getc
     if c.nil? || c < "0" || c > "9"
       io.ungetc(c)
