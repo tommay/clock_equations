@@ -1,28 +1,22 @@
-require "stringio"
-
 class Evaluator
   def self.eval(expression)
     Evaluator.new(expression).eval
   end
 
   def initialize(expression)
-    @expression = expression
-    @io = nil
+    @enumerator = expression.each_char
     @c = nil
   end
 
   def eval
-    StringIO.open(@expression) do |io|
-      @io = io
-      nextc
-      equality
-    end
+    nextc
+    equality
   end
 
   # Fetch the next character and return the current character.
 
   def nextc
-    @c.tap{@c = @io.getc}
+    @c.tap{@c = @enumerator.next rescue nil}
   end
 
   # Test the current character against either the given character or
