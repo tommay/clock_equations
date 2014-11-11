@@ -89,18 +89,39 @@ class PrattEvaluator
     end
   end
 
-  def initialize(expression)
-    tokens = {
-      "=" => EqualsToken.new(self),
-      "+" => AddToken.new(self),
-      "-" => SubToken.new(self),
-      "*" => MulToken.new(self),
-      "/" => DivToken.new(self),
-    }
-    (0..9).each do |d|
-      tokens[d.to_s] = DigitToken.new(self, d.to_f)
-    end
+  # This is a piece of work.  DigitTokenFactory.create(n) returns an
+  # object which works like a Token class in that object.new(evaluator)
+  # can be called and will return a DigitToken that has been initialized
+  # with n.
 
+  class DigitTokenFactory
+    def self.create(value)
+      Class.new do
+        class << self; self; end.class_eval do
+          define_method(:new) do |evaluator|
+            DigitToken.new(evaluator, value)
+          end
+        end
+      end
+    end
+  end
+
+  @@token_classes = {
+    "=" => EqualsToken,
+    "+" => AddToken,
+    "-" => SubToken,
+    "*" => MulToken,
+    "/" => DivToken,
+  }
+  (0..9).each do |d|
+    @@token_classes[d.to_s] = DigitTokenFactory.create(d.to_f)
+  end
+
+  def initialize(expression)
+    tokens = Hash[
+      *(@@token_classes.flat_map{|k, v| [k, v.new(self)]})
+    ]
+      
     @tokens = Enumerator.new do |y|
       expression.each_char do |c|
         y << tokens[c]
