@@ -37,12 +37,17 @@ class PrattEvaluator
     t = @token
     @token = next_token
     left = t.nud
-    while rbp < @token.lbp do
+    more_expression(rbp, left)
+  end
+
+  def more_expression(rbp, left)
+    if rbp < @token.lbp
       t = @token
       @token = next_token
-      left = t.led(left)
+      more_expression(rbp, t.led(left))
+    else
+      left
     end
-    left
   end
 
   class Token
