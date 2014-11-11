@@ -17,15 +17,18 @@ class PrattEvaluator
       tokens[d.to_s] = DigitToken.new(self, d.to_f)
     end
 
-    @tokens = expression.each_char.map do |c|
-      tokens[c]
-    end.each
+    @tokens = Enumerator.new do |y|
+      expression.each_char do |c|
+        y << tokens[c]
+      end
+      y << EndToken.new
+    end
 
     @token = nil
   end
 
   def next_token
-    @tokens.next rescue EndToken.new
+    @tokens.next
   end
 
   def eval
