@@ -12,27 +12,22 @@ class PrattEvaluator
   end
 
   class Token
-    def initialize(evaluator, lbp)
-      @evaluator = evaluator
+    def initialize(lbp)
       @lbp = lbp
     end
 
     def lbp
       @lbp
     end
-
-    def expression(rbp = @lbp)
-      @evaluator.expression(rbp)
-    end
   end
 
   class EqualsToken < Token
-    def initialize(evaluator)
-      super(evaluator, 8)
+    def initialize
+      super(8)
     end
 
-    def led(left)
-      left == expression
+    def led(evaluator, left)
+      left == evaluator.expression(lbp)
     end
   end
 
@@ -43,88 +38,67 @@ class PrattEvaluator
   end
 
   class AddToken < Token
-    def initialize(evaluator)
-      super(evaluator, 10)
+    def initialize
+      super(10)
     end
 
-    def led(left)
-      left + expression
+    def led(evaluator, left)
+      left + evaluator.expression(lbp)
     end
   end
 
   class SubToken < AddToken
-    def led(left)
-      left - expression
+    def led(evaluator, left)
+      left - evaluator.expression(lbp)
     end
   end
 
   class MulToken < Token
-    def initialize(evaluator)
-      super(evaluator, 20)
+    def initialize
+      super(20)
     end
 
-    def led(left)
-      left * expression
+    def led(evaluator, left)
+      left * evaluator.expression(lbp)
     end
   end
 
   class DivToken < MulToken
-    def led(left)
-      left / expression
+    def led(evaluator, left)
+      left / evaluator.expression(lbp)
     end
   end
 
   class DigitToken < Token
-    def initialize(evaluator, value)
-      super(evaluator, 100)
+    def initialize(value)
+      super(100)
       @value = value
     end
 
-    def nud
+    def nud(evaluator)
       @value
     end
 
-    def led(left)
+    def led(evaluator, left)
       left*10 + @value
     end
   end
 
-  # This is a piece of work.  DigitTokenFactory.create(n) returns an
-  # object which works like a Token class in that object.new(evaluator)
-  # can be called and will return a DigitToken that has been initialized
-  # with n.
-
-  class DigitTokenFactory
-    def self.create(value)
-      Object.new.tap do |factory|
-        class << factory; self; end.class_eval do
-          define_method(:new) do |evaluator|
-            DigitToken.new(evaluator, value)
-          end
-        end
-      end
-    end
-  end
-
-  @@token_classes = {
-    "=" => EqualsToken,
-    "+" => AddToken,
-    "-" => SubToken,
-    "*" => MulToken,
-    "/" => DivToken,
+  @@tokens = {
+    "=" => EqualsToken.new,
+    "+" => AddToken.new,
+    "-" => SubToken.new,
+    "*" => MulToken.new,
+    "/" => DivToken.new,
   }
   (0..9).each do |d|
-    @@token_classes[d.to_s] = DigitTokenFactory.create(d.to_f)
+    @@tokens[d.to_s] = DigitToken.new(d.to_f)
   end
 
   def initialize(expression)
-    tokens = Hash[
-      *(@@token_classes.flat_map{|k, v| [k, v.new(self)]})
-    ]
-      
     @tokens = Enumerator.new do |y|
       expression.each_char do |c|
-        y << tokens[c]
+        y << @@tokens[c]
       end
       y << EndToken.new
     end
@@ -144,7 +118,7 @@ class PrattEvaluator
   def expression(rbp = 0)
     t = @token
     @token = next_token
-    left = t.nud
+    left = t.nud(self)
     more_expression(rbp, left)
   end
 
@@ -152,7 +126,7 @@ class PrattEvaluator
     if rbp < @token.lbp
       t = @token
       @token = next_token
-      more_expression(rbp, t.led(left))
+      more_expression(rbp, t.led(self, left))
     else
       left
     end
