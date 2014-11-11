@@ -44,17 +44,12 @@ class PrattParser
     t = @token
     @token = next_token
     left = t.nud(self)
-    more_expression(rbp, left)
-  end
-
-  def more_expression(rbp, left)
-    if rbp < @token.lbp
+    while rbp < @token.lbp
       t = @token
       @token = next_token
-      more_expression(rbp, t.led(self, left))
-    else
-      left
+      left = t.led(self, left)
     end
+    left
   end
 
   class EndToken
