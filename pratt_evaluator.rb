@@ -96,8 +96,8 @@ class PrattEvaluator
 
   class DigitTokenFactory
     def self.create(value)
-      Class.new do
-        class << self; self; end.class_eval do
+      Object.new.tap do |factory|
+        class << factory; self; end.class_eval do
           define_method(:new) do |evaluator|
             DigitToken.new(evaluator, value)
           end
