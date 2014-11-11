@@ -64,19 +64,9 @@ class PrattEvaluator
     PrattParser.new(@expression.each_char.lazy.map{|c|@@tokens[c]}).eval
   end
 
-  class Token
-    def initialize(lbp)
-      @lbp = lbp
-    end
-
+  class EqualsToken
     def lbp
-      @lbp
-    end
-  end
-
-  class EqualsToken < Token
-    def initialize
-      super(8)
+      8
     end
 
     def led(evaluator, left)
@@ -84,9 +74,9 @@ class PrattEvaluator
     end
   end
 
-  class AddToken < Token
-    def initialize
-      super(10)
+  class AddToken
+    def lbp
+      10
     end
 
     def led(evaluator, left)
@@ -100,9 +90,9 @@ class PrattEvaluator
     end
   end
 
-  class MulToken < Token
-    def initialize
-      super(20)
+  class MulToken
+    def lbp
+      20
     end
 
     def led(evaluator, left)
@@ -116,10 +106,13 @@ class PrattEvaluator
     end
   end
 
-  class DigitToken < Token
+  class DigitToken
     def initialize(value)
-      super(100)
       @value = value
+    end
+
+    def lbp
+      100
     end
 
     def nud(evaluator)
