@@ -9,6 +9,7 @@
 # and evaluating their truth value.
 
 require_relative "evaluator"
+require_relative "pratt_evaluator"
 
 def main
   time_and_equations.each do |time, equation|
@@ -36,7 +37,7 @@ def time_and_equations
   # Select the valid time/equations.
 
   valid_time_and_equations = time_and_equations.select do |time, equation|
-    Evaluator.eval(equation)
+    PrattEvaluator.eval(equation)
   end
 
   # Return them.
