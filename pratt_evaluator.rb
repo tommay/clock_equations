@@ -1,5 +1,11 @@
 # Evaluate expressions using a Pratt parser.
 
+require "byebug"
+
+# http://javascript.crockford.com/tdop/tdop.html
+# http://effbot.org/zone/simple-top-down-parsing.htm
+# http://journal.stuffwithstuff.com/2011/03/19/pratt-parsers-expression-parsing-made-easy/
+
 class PrattEvaluator
   def self.eval(expression)
     PrattEvaluator.new(expression).eval
