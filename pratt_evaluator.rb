@@ -11,54 +11,6 @@ class PrattEvaluator
     PrattEvaluator.new(expression).eval
   end
 
-  def initialize(expression)
-    tokens = {
-      "=" => EqualsToken.new(self),
-      "+" => AddToken.new(self),
-      "-" => SubToken.new(self),
-      "*" => MulToken.new(self),
-      "/" => DivToken.new(self),
-    }
-    (0..9).each do |d|
-      tokens[d.to_s] = DigitToken.new(self, d.to_f)
-    end
-
-    @tokens = Enumerator.new do |y|
-      expression.each_char do |c|
-        y << tokens[c]
-      end
-      y << EndToken.new
-    end
-
-    @token = nil
-  end
-
-  def next_token
-    @tokens.next
-  end
-
-  def eval
-    @token = next_token
-    expression
-  end
-
-  def expression(rbp = 0)
-    t = @token
-    @token = next_token
-    left = t.nud
-    more_expression(rbp, left)
-  end
-
-  def more_expression(rbp, left)
-    if rbp < @token.lbp
-      t = @token
-      @token = next_token
-      more_expression(rbp, t.led(left))
-    else
-      left
-    end
-  end
-
   class Token
     def initialize(evaluator, lbp)
       @evaluator = evaluator
@@ -134,6 +86,54 @@ class PrattEvaluator
 
     def led(left)
       left*10 + @value
+    end
+  end
+
+  def initialize(expression)
+    tokens = {
+      "=" => EqualsToken.new(self),
+      "+" => AddToken.new(self),
+      "-" => SubToken.new(self),
+      "*" => MulToken.new(self),
+      "/" => DivToken.new(self),
+    }
+    (0..9).each do |d|
+      tokens[d.to_s] = DigitToken.new(self, d.to_f)
+    end
+
+    @tokens = Enumerator.new do |y|
+      expression.each_char do |c|
+        y << tokens[c]
+      end
+      y << EndToken.new
+    end
+
+    @token = nil
+  end
+
+  def next_token
+    @tokens.next
+  end
+
+  def eval
+    @token = next_token
+    expression
+  end
+
+  def expression(rbp = 0)
+    t = @token
+    @token = next_token
+    left = t.nud
+    more_expression(rbp, left)
+  end
+
+  def more_expression(rbp, left)
+    if rbp < @token.lbp
+      t = @token
+      @token = next_token
+      more_expression(rbp, t.led(left))
+    else
+      left
     end
   end
 end
