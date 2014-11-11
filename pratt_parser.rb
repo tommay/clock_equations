@@ -1,17 +1,25 @@
 # A Pratt parser.  Similar to a recursive decent parser but instead of
 # coding a function for each production, the syntax is coded in a set
 # of token objects that are yielded by the lexer.  New operators and
-# statements can be slipped in to the language by adding new token
-# objects to the lexer without altering the code for existing tokens.
+# statements can be slipped in to the language with the proper
+# precedence by adding new token objects to the lexer without altering
+# the code for existing tokens.  Pretty cool.
 #
-# lexer is an enumerator with a next method that returns objects with
-# three methods:
+# lexer is an enumerator with a next method that returns token objects
+# with three methods:
 # lbp: return the operator precedence.  Higher numbers bind more tightly.
-# nud:
-# led(left): combine the left, which is the parsed expression to the
+# nud(parser): called when the token is returned with nothing to the left
+#   of it to cobine with, e.g., a unary operator "+1".
+# led(parser, left): combine left, which is the parsed expression to the
 #   left of the operator, with the expression to the right of the operator.
+# Only lbp is mandatory.  nud and led will be called only when necessary, if
+# ever.
+# nud and lcd can call parser.expression(rbp) to recursively parse the
+# right expression.  rbp should be the token's lbp for left-associativity,
+# lbp-1 for right.
 #
 # PrattParser.new(lexer).eval will return the result of the parse.
+#
 # Syntax errors aren't handled at the moment and will cause ridiculous
 # exceptions to be raised such as NoMethodError.
 
