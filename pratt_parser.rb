@@ -31,22 +31,18 @@ class PrattParser
     @token = nil
   end
 
-  def next_token
-    @lexer.next
-  end
-
   def eval
-    @token = next_token
+    @token = @lexer.next
     expression(0)
   end
 
   def expression(rbp)
     t = @token
-    @token = next_token
+    @token = @lexer.next
     left = t.nud(self)
     while rbp < @token.lbp
       t = @token
-      @token = next_token
+      @token = @lexer.next
       left = t.led(self, left)
     end
     left
