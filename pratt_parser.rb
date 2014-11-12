@@ -56,7 +56,7 @@ class PrattParser
     left
   end
 
-  def advance(expected_token_class)
+  def expect(expected_token_class)
     if @token.class != expected_token_class
       raise "Expected #{expected_token_class}, got #{@token.class}"
     end

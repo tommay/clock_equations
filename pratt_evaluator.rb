@@ -87,7 +87,7 @@ class PrattEvaluator
 
     def nud(parser)
       parser.expression(lbp).tap do
-        parser.advance(RightParenToken)
+        parser.expect(RightParenToken)
       end
     end
   end
