@@ -8,8 +8,8 @@
 # lexer is an enumerator with a next method that returns token objects
 # with three methods:
 # lbp: return the operator precedence.  Higher numbers bind more tightly.
-# nud(parser): called when the token is returned with nothing to the left
-#   of it to cobine with, e.g., a unary operator "+1".
+# nud(parser): called when the token is encountered with nothing to the left
+#   of it to combine with, e.g., a unary operator "+1".
 # led(parser, left): combine left, which is the parsed expression to the
 #   left of the operator, with the expression to the right of the operator.
 # Only lbp is mandatory.  nud and led will be called only when necessary, if
@@ -54,6 +54,13 @@ class PrattParser
       left = t.led(self, left)
     end
     left
+  end
+
+  def advance(expected_token_class)
+    if @token.class != expected_token_class
+      raise "Expected #{expected_token_class}, got #{@token.class}"
+    end
+    @token = @lexer.next
   end
 
   class EndToken

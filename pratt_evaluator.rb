@@ -75,12 +75,37 @@ class PrattEvaluator
     end
   end
 
+  # The simple clock expressions don't use parentheses.  These are
+  # just here to see how easy it is to slip new rules into a grammar.
+  # It is indeed easy.  No need to modify existing rules or recompile
+  # a BNF grammar.
+
+  class LeftParenToken
+    def lbp
+      0
+    end
+
+    def nud(parser)
+      parser.expression(lbp).tap do
+        parser.advance(RightParenToken)
+      end
+    end
+  end
+
+  class RightParenToken
+    def lbp
+      0
+    end
+  end
+
   @@tokens = {
     "=" => EqualsToken.new,
     "+" => AddToken.new,
     "-" => SubToken.new,
     "*" => MulToken.new,
     "/" => DivToken.new,
+    "(" => LeftParenToken.new,
+    ")" => RightParenToken.new,
   }
   (0..9).each do |d|
     @@tokens[d.to_s] = DigitToken.new(d.to_f)
