@@ -63,6 +63,12 @@ class PrattParser
     @token = @lexer.next
   end
 
+  def if?(token_class)
+    if @token.class == token_class
+      @token = @lexer.next
+    end
+  end
+
   class EndToken
     def lbp
       0
