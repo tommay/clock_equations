@@ -5,7 +5,7 @@
 # precedence by adding new token objects to the lexer without altering
 # the code for existing tokens.  Pretty cool.
 #
-# lexer is an enumerator with a next method that returns token objects
+# lexer is an enumerator with an each method that returns token objects
 # with three methods:
 # lbp: return the operator precedence.  Higher numbers bind more tightly.
 # nud(parser): called when the token is encountered with nothing to the left
