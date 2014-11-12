@@ -4,15 +4,7 @@ require_relative "pratt_parser"
 
 class PrattEvaluator
   def self.eval(expression)
-    PrattEvaluator.new(expression).eval
-  end
-
-  def initialize(expression)
-    @expression = expression
-  end
-
-  def eval
-    PrattParser.new(Lexer.new(@expression)).eval
+    PrattParser.new(Lexer.new(expression)).eval
   end
 
   class Lexer
