@@ -20,8 +20,8 @@ class PrattEvaluator
       8
     end
 
-    def led(evaluator, left)
-      left == evaluator.expression(lbp)
+    def led(parser, left)
+      left == parser.expression(lbp)
     end
   end
 
@@ -30,14 +30,14 @@ class PrattEvaluator
       10
     end
 
-    def led(evaluator, left)
-      left + evaluator.expression(lbp)
+    def led(parser, left)
+      left + parser.expression(lbp)
     end
   end
 
   class SubToken < AddToken
-    def led(evaluator, left)
-      left - evaluator.expression(lbp)
+    def led(parser, left)
+      left - parser.expression(lbp)
     end
   end
 
@@ -46,14 +46,14 @@ class PrattEvaluator
       20
     end
 
-    def led(evaluator, left)
-      left * evaluator.expression(lbp)
+    def led(parser, left)
+      left * parser.expression(lbp)
     end
   end
 
   class DivToken < MulToken
-    def led(evaluator, left)
-      left / evaluator.expression(lbp)
+    def led(parser, left)
+      left / parser.expression(lbp)
     end
   end
 
@@ -66,11 +66,11 @@ class PrattEvaluator
       100
     end
 
-    def nud(evaluator)
+    def nud(parser)
       @value
     end
 
-    def led(evaluator, left)
+    def led(parser, left)
       left*10 + @value
     end
   end
