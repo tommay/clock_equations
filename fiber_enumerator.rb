@@ -12,18 +12,18 @@ class FiberEnumerator
     end
   end
 
-  def next
-    @fiber.resume
-  end
+  # Enumerable builds everything on top of each.
 
   def each(&block)
     begin
       while true
-        block.call(self.next)
+        block.call(@fiber.resume)
       end
     rescue StopIteration
     end
   end
+
+  # The Yielder passed to the block can be any object with a << method.
 
   class Yielder
     def self.<<(value)
