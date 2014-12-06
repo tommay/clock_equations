@@ -8,10 +8,17 @@
 # lexer is an enumerator with an each method that returns token objects
 # with three methods:
 # lbp: return the operator precedence.  Higher numbers bind more tightly.
-# nud(parser): called when the token is encountered with nothing to the left
-#   of it to combine with, e.g., a unary operator "+1".
-# led(parser, left): combine left, which is the parsed expression to the
-#   left of the operator, with the expression to the right of the operator.
+# nud(parser): called when the token is the first token in an expression,
+#   including a recursive call to expresssion (i.e., subexpression).  For
+#   Example, this would be called for a unary operator, a literal, or for
+#   the "if" in the construct "if <cond> then <expr>".
+#   It is the token's responsibility to call parser.expression, parser.expect,
+#   and/or parser.if? to handle the remainder of the expression, if any.
+# led(parser, left): called when the token is preceeded by a subexpression,
+#   left.  The token may be postfix or infix.
+#   It is the token's responsibility to call parser.expression, parser.expect,
+#   and/or parser.if? to handle the remainder of the expression, if any,
+#   and combine it with left.
 # Only lbp is mandatory.  nud and led will be called only when necessary, if
 # ever.
 # nud and lcd can call parser.expression(rbp) to recursively parse the
@@ -40,6 +47,8 @@ class PrattParser
   end
 
   def eval
+    require "byebug"
+    byebug
     @token = @lexer.next
     expression(0)
   end
