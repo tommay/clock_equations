@@ -1,4 +1,9 @@
-# Messing around with building my own Enumerator class using Fiber.
+# Messing around with building my own Enumerator class using callcc.
+# However, as of Ruby 2,2 if not earlier "callcc is obsolete. use
+# Fiber instead."
+#
+# This implementation is rather a mess.  coroutine.rb/coroutine_enumrator.rb
+# has things abstracted much more nicely.
 
 require "continuation"
 

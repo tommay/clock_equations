@@ -1,5 +1,8 @@
 require "continuation"
 
+# Coroutine class built on top of calcc.  However, as of Ruby 2,2 if
+# not earlier "callcc is obsolete. use Fiber instead."
+
 # For some reason calling Fiber.current prevents a "coroutine.rb:25:in
 # `call': continuation called across fiber (RuntimeError)" which
 # started happening after switching Evaluator from StringIO to
