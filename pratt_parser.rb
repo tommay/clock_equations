@@ -47,8 +47,6 @@ class PrattParser
   end
 
   def eval
-    require "byebug"
-    byebug
     @token = @lexer.next
     expression(0)
   end

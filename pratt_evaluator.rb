@@ -55,6 +55,18 @@ class PrattEvaluator
         left / parser.expression(lbp)
       end
     end
+
+    # Slip in a right-associative operator by using lbp-1.
+
+    class PowerToken
+      def lbp
+        30
+      end
+      
+      def led(parser, left)
+        left ** parser.expression(lbp - 1)
+      end
+    end
     
     class DigitToken
       def initialize(value)
@@ -103,6 +115,7 @@ class PrattEvaluator
       "-" => SubToken.new,
       "*" => MulToken.new,
       "/" => DivToken.new,
+      "^" => PowerToken.new,
       "(" => LeftParenToken.new,
       ")" => RightParenToken.new,
     }
