@@ -25,14 +25,14 @@ class PrattEvaluator
     end
 
     class InfixToken < Token
-      def initialize(lbp, sym, associates = :left)
+      def initialize(lbp, associates = :left, &block)
         super(lbp)
-        @sym = sym
+        @block = block
         @rbp = (associates == :left ? lbp : lbp - 1)
       end
 
       def led(parser, left)
-        left.send(@sym, parser.expression(@rbp))
+        @block.call(left, parser.expression(@rbp))
       end
     end
 
@@ -73,19 +73,19 @@ class PrattEvaluator
       @@tokens[char] = t
     end
 
-    def self.infix(char, lbp, sym, associates = :left)
-      token(char, InfixToken.new(lbp, sym, associates))
+    def self.infix(char, lbp, associates = :left, &block)
+      token(char, InfixToken.new(lbp, associates, &block))
     end
 
     token("(", LeftParenToken.new(0))
     token(")", RightParenToken.new(0))
 
-    infix("=", 10, :==)
-    infix("+", 20, :+)
-    infix("-", 20, :-)
-    infix("*", 30, :*)
-    infix("/", 30, :/)
-    infix("^", 40, :**, :right)
+    infix("=", 10, &:==)
+    infix("+", 20, &:+)
+    infix("-", 20, &:-)
+    infix("*", 30, &:*)
+    infix("/", 30, &:/)
+    infix("^", 40, :right, &:**)
 
     (0..9).each do |d|
       token(d.to_s, DigitToken.new(100, d.to_f))
