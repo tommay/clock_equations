@@ -13,68 +13,33 @@ class PrattEvaluator
     def self.new(expression)
       expression.each_char.lazy.map{|c|@@tokens[c]}
     end
-    
-    class EqualsToken
+
+    class Token
+      def initialize(lbp)
+        @lbp = lbp
+      end
+
       def lbp
-        8
-      end
-      
-      def led(parser, left)
-        left == parser.expression(lbp)
-      end
-    end
-    
-    class AddToken
-      def lbp
-        10
-      end
-      
-      def led(parser, left)
-        left + parser.expression(lbp)
-      end
-    end
-    
-    class SubToken < AddToken
-      def led(parser, left)
-        left - parser.expression(lbp)
-      end
-    end
-    
-    class MulToken
-      def lbp
-        20
-      end
-      
-      def led(parser, left)
-        left * parser.expression(lbp)
-      end
-    end
-    
-    class DivToken < MulToken
-      def led(parser, left)
-        left / parser.expression(lbp)
+        @lbp
       end
     end
 
-    # Slip in a right-associative operator by using lbp-1.
-
-    class PowerToken
-      def lbp
-        30
+    class InfixToken < Token
+      def initialize(lbp, sym, associates = :left)
+        super(lbp)
+        @sym = sym
+        @rbp = (associates == :left ? lbp : lbp - 1)
       end
-      
+
       def led(parser, left)
-        left ** parser.expression(lbp - 1)
+        left.send(@sym, parser.expression(@rbp))
       end
     end
-    
-    class DigitToken
-      def initialize(value)
+
+    class DigitToken < Token
+      def initialize(lbp, value)
+        super(lbp)
         @value = value
-      end
-      
-      def lbp
-        100
       end
       
       def nud(parser)
@@ -91,11 +56,7 @@ class PrattEvaluator
     # grammar.  It is indeed easy.  No need to modify existing rules
     # or recompile a BNF grammar.
     
-    class LeftParenToken
-      def lbp
-        0
-      end
-      
+    class LeftParenToken < Token
       def nud(parser)
         parser.expression(lbp).tap do
           parser.expect(RightParenToken)
@@ -103,24 +64,31 @@ class PrattEvaluator
       end
     end
     
-    class RightParenToken
-      def lbp
-        0
-      end
+    class RightParenToken < Token
     end
     
-    @@tokens = {
-      "=" => EqualsToken.new,
-      "+" => AddToken.new,
-      "-" => SubToken.new,
-      "*" => MulToken.new,
-      "/" => DivToken.new,
-      "^" => PowerToken.new,
-      "(" => LeftParenToken.new,
-      ")" => RightParenToken.new,
-    }
+    @@tokens = {}
+    
+    def self.token(char, t)
+      @@tokens[char] = t
+    end
+
+    def self.infix(char, lbp, sym, associates = :left)
+      token(char, InfixToken.new(lbp, sym, associates))
+    end
+
+    token("(", LeftParenToken.new(0))
+    token(")", RightParenToken.new(0))
+
+    infix("=", 10, :==)
+    infix("+", 20, :+)
+    infix("-", 20, :-)
+    infix("*", 30, :*)
+    infix("/", 30, :/)
+    infix("^", 40, :**, :right)
+
     (0..9).each do |d|
-      @@tokens[d.to_s] = DigitToken.new(d.to_f)
+      token(d.to_s, DigitToken.new(100, d.to_f))
     end
   end
 end
