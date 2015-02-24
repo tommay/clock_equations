@@ -53,16 +53,32 @@ def equations_for_time(time)
   # ops is the array of all possible operator combinations of the
   # correct length to intersperse with the time.
   
-  ops = ([["=", "+", "-", "*", "/", ""]] * (time_digits.size - 1))
-    .reduce(&:product)
-    .map(&:flatten)
+  ops = combinations(time_digits.size - 1, ["=", "+", "-", "*", "/", ""])
     .select{|x| x.count("=") == 1}
-  
+
   # Zip each operator set into the digits and join the result to
   # make a string.  If the string evaluates as true, print it out.
   
   ops.map do |op_array|
     time_digits.zip(op_array).flatten.join
+  end
+end
+
+# Returns all combinations of length size of the elements in the array.
+# Each combination will use each element zero to size times.
+
+def combinations(size, array)
+  ([array] * (size - 1)).reduce(array.map{|o| [o]}) do |accum, o|
+    append_product(accum, o)
+  end
+end
+
+# a is an array of arrays.  Returns a new array of arrays created by
+# appending each element of b onto each array element of a.
+
+def append_product(a, b)
+  a.flat_map do |a_list|
+    b.map {|b_element| a_list + [b_element]}
   end
 end
 
