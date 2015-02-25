@@ -64,22 +64,19 @@ def equations_for_time(time)
   end
 end
 
-# Returns all combinations of length size of the elements in the array.
-# Each combination will use each element zero to size times.
+# Returns all combinations of length size of the elements in the
+# array.  Each combination will use each element zero to size times.
+# If size is zero the result is [[]] because there is one combination
+# of zero elements and it is empty.
 
 def combinations(size, array)
-  ([array] * (size - 1)).reduce(array.map{|o| [o]}) do |accum, o|
-    append_product(accum, o)
+  accum = [[]]
+  size.times do
+    accum = accum.flat_map do |c|
+      array.map{|e| c + [e]}
+    end
   end
-end
-
-# a is an array of arrays.  Returns a new array of arrays created by
-# appending each element of b onto each array element of a.
-
-def append_product(a, b)
-  a.flat_map do |a_list|
-    b.map {|b_element| a_list + [b_element]}
-  end
+  accum
 end
 
 if __FILE__ == $0
