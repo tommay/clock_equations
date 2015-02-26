@@ -8,6 +8,7 @@ GEM
     columnize (0.9.0)
     debugger-linecache (1.2.0)
     minitest (5.5.1)
+    pratt_parser (0.0.2)
     slop (3.6.0)
 
 PLATFORMS
@@ -16,3 +17,4 @@ PLATFORMS
 DEPENDENCIES
   byebug
   minitest
+  pratt_parser

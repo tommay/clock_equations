@@ -8,6 +8,7 @@
 # "clock eauations".  There are two parts: generating the equations,
 # and evaluating their truth value.
 
+require "bundler/setup"
 require_relative "evaluator"
 require_relative "pratt_evaluator"
 

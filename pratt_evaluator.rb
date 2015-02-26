@@ -1,6 +1,6 @@
 # Evaluate expressions using a PrattParser.
 
-require_relative "pratt_parser"
+require "pratt_parser"
 
 class PrattEvaluator
   def self.eval(expression)
